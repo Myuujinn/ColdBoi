@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,aspnetcore,csharp
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,aspnetcore,csharp
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,aspnetcore,csharp
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,aspnetcore,csharp
 
 ### ASPNETCore ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -472,6 +472,17 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
 ### VisualStudio ###
 
 # User-specific files
@@ -627,4 +638,4 @@ MigrationBackup/
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudio,aspnetcore,csharp
+# End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,aspnetcore,csharp
