@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace ColdBoi
@@ -12,6 +13,12 @@ namespace ColdBoi
         public Screen()
         {
             this.FrameBuffer = new Color[SCREEN_WIDTH * SCREEN_HEIGHT];
+            var random = new Random();
+            
+            for (var i = 0; i < this.FrameBuffer.Length; i++)
+            {
+                this.FrameBuffer[i] = new Color(random.Next() % 256, random.Next() % 256, random.Next() % 256);
+            }
         }
     }
 }

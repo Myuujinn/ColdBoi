@@ -1,5 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.IO;
+using ColdBoi.Interface;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Myra;
+using Myra.Graphics2D.UI;
+using Myra.Graphics2D.UI.File;
 
 namespace ColdBoi
 {
@@ -9,9 +15,15 @@ namespace ColdBoi
         private GraphicsDeviceManager GraphicsDeviceManager { get; }
 
         private string romPath;
-        private int scale;
+        private readonly int scale;
+
+        private Desktop desktop;
+        
         private SpriteBatch spriteBatch;
         private Texture2D pixel;
+
+        private FileStream logFile;
+        private StreamWriter logStream;
 
         public ColdBoi(string romPath, int scale = 2)
         {
@@ -26,13 +38,52 @@ namespace ColdBoi
                 SynchronizeWithVerticalRetrace = true
             };
 
-            this.IsFixedTimeStep = false;
+            this.IsFixedTimeStep = true;
+            this.IsMouseVisible = true;
+            
+            this.logFile = new FileStream("log.txt", FileMode.Create);
+            this.logStream = new StreamWriter(this.logFile);
+            Console.SetOut(this.logStream);
+        }
+        
+        private void OpenRom(object sender, EventArgs eventArgs)
+        {
+            var dlg = new FileDialog(FileDialogMode.OpenFile)
+            {
+                Filter = "*.gb"
+            };
+
+            if (!string.IsNullOrEmpty(romPath))
+            {
+                dlg.FilePath = romPath;
+            }
+
+            dlg.Closed += (s, a) =>
+            {
+                if (!dlg.Result)
+                {
+                    return;
+                }
+
+                var filePath = dlg.FilePath;
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    return;
+                }
+
+                romPath = filePath;
+            };
+
+            dlg.ShowModal(desktop);
+        }
+        
+        private void Quit(object sender, EventArgs genericEventArgs)
+        {
+            Exit();
         }
 
         protected override void Initialize()
         {
-            base.Initialize();
-
             this.GameBoy = new GameBoy(this.romPath);
             this.Window.Title = $"ColdBoi - {this.GameBoy.Processor.Memory.RomName}";
 
@@ -40,14 +91,34 @@ namespace ColdBoi
 
             this.pixel = new Texture2D(this.GraphicsDevice, 1, 1);
             this.pixel.SetData(new[] {Color.White});
+            
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            MyraEnvironment.Game = this;
+            
+            var ui = new UI();
+            ui.menuItemOpen.Selected += this.OpenRom;
+            ui.menuItemQuit.Selected += this.Quit;
+            
+            this.desktop = new Desktop
+            {
+                Root = ui
+            };
+        }
+
+        protected override void UnloadContent()
+        {
+            this.logStream.Close();
         }
 
         protected override void Update(GameTime gameTime)
         {
+            this.GameBoy.Update();
+            
             base.Update(gameTime);
-
-            var timeElapsed = gameTime.ElapsedGameTime.TotalSeconds;
-            this.GameBoy.Update(timeElapsed);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -73,6 +144,8 @@ namespace ColdBoi
             }
 
             this.spriteBatch.End();
+            
+            desktop.Render();
 
             base.Draw(gameTime);
         }

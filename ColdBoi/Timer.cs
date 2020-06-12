@@ -5,35 +5,25 @@ namespace ColdBoi
 {
     public class Timer
     {
-        private readonly List<Action> actions;
-        private readonly double ticksPerSecond;
+        private readonly List<Action<int>> actions;
+        private readonly int frequency;
 
         public Timer(int frequency)
         {
-            this.actions = new List<Action>();
-            this.ticksPerSecond = 1d / frequency;
+            this.actions = new List<Action<int>>();
+            this.frequency = frequency;
         }
 
-        public void AddAction(Action action)
+        public void AddAction(Action<int> action)
         {
             this.actions.Add(action);
         }
 
-        public void Update(double timeElapsed)
-        {
-            var timesToTick = Math.Round(timeElapsed / this.ticksPerSecond);
-
-            for (var i = 0; i < timesToTick; i++)
-            {
-                Tick();
-            }
-        }
-
-        private void Tick()
+        public void Update()
         {
             foreach (var action in this.actions)
             {
-                action.Invoke();
+                action.Invoke(frequency);
             }
         }
     }

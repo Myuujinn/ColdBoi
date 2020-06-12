@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ColdBoi": {
+      "commandName": "Project",
+      "commandLineArgs": "-r Tetris.GB -s 4"
+    }
+  }
+}

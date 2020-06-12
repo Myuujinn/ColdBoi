@@ -6,22 +6,15 @@ namespace ColdBoi
     public class GameBoy
     {
         public Timer Timer { get; }
-        public Processor Processor { get; }
-        public Graphics Graphics { get; }
         public Screen Screen { get; }
-        public Input Input { get; }
-
+        public Processor Processor { get; }
         public GameBoy(string romPath)
         {
-            this.Timer = new Timer(Processor.CLOCK_SPEED);
-            this.Processor = new Processor();
-            this.Graphics = new Graphics(this.Processor.Memory);
+            this.Timer = new Timer(Processor.CLOCK_SPEED / 60); // 60 frames per second
             this.Screen = new Screen();
-            this.Input = new Input(this.Processor.Memory);
+            this.Processor = new Processor(this.Screen);
 
-            this.Timer.AddAction(this.Input.Update);
             this.Timer.AddAction(this.Processor.Tick);
-            this.Timer.AddAction(this.Graphics.Tick);
 
             LoadRom(romPath);
             SetDefaultBootValues();
@@ -83,9 +76,9 @@ namespace ColdBoi
             this.Processor.Memory.LoadRomData(romData);
         }
 
-        public void Update(double timeElapsed)
+        public void Update()
         {
-            this.Timer.Update(timeElapsed);
+            this.Timer.Update();
         }
     }
 }

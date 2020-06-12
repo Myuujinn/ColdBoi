@@ -11,19 +11,27 @@ namespace ColdBoi
         public Memory Memory { get; }
         public Registers Registers { get; }
         public Stack Stack { get; }
+        public Interrupts Interrupts { get; }
+        public Graphics Graphics { get; }
+        public Input Input { get; }
+
         private ControlUnit ControlUnit { get; }
 
-        private byte cyclesToWait;
+        public int cyclesExecuted;
         private ushort walkerIndex;
 
-        public Processor()
+        public Processor(Screen screen)
         {
             this.Memory = new Memory();
             this.Registers = new Registers();
             this.Stack = new Stack(this.Memory, this.Registers.SP);
+
+            this.Interrupts = new Interrupts(this);
+            this.Graphics = new Graphics(this, screen);
+            this.Input = new Input(this.Memory);
             this.ControlUnit = new ControlUnit(this);
 
-            this.cyclesToWait = 0;
+            this.cyclesExecuted = 0;
 
             Initialize();
         }
@@ -38,12 +46,33 @@ namespace ColdBoi
             return this.Memory.Content[this.walkerIndex++];
         }
 
-        public void Tick()
+        public void Tick(int timesToTick)
         {
-            if (this.cyclesToWait > 0)
-            {
-                this.cyclesToWait -= 1;
+            if (test >= 4)
                 return;
+            else if (test >= 2)
+            {
+                Console.Error.WriteLine("writing tileset");
+                this.Graphics.RenderTileSet();
+                test += 2;
+                return;
+            }
+            
+            this.cyclesExecuted = 0;
+
+            while (this.cyclesExecuted < timesToTick)
+            {
+                Cycle();
+            }
+        }
+
+        private int test;
+
+        private void Cycle()
+        {
+            if (this.Registers.PC.Value == 0x27ac)
+            {
+                this.test += 1;
             }
 
             // Just to be sure
@@ -53,19 +82,19 @@ namespace ColdBoi
             var operands = this.ControlUnit.FetchOperands(instruction.OperandLength);
 
 #if DEBUG
-            //this.Registers.Dump();
+            this.Registers.Dump();
 #endif
-            
+
             this.ControlUnit.Execute(instruction, operands);
 
-            if (this.Registers.PC.Value == 0x282a)
-            {
-                this.Registers.Dump();
-                Environment.Exit(1);
-            }
-                
             this.Registers.PC.Value += instruction.Length;
-            this.cyclesToWait = instruction.Cycles;
+            this.cyclesExecuted += instruction.Cycles;
+
+            this.Graphics.Tick(instruction.Cycles);
+
+            this.Interrupts.Process();
+
+            this.Input.Update();
         }
     }
 }

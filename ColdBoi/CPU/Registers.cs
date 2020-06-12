@@ -47,7 +47,7 @@ namespace ColdBoi.CPU
             Console.WriteLine(
                 $"AF: {this.AF.Value:X4}, BC: {this.BC.Value:X4}, DE: {this.DE.Value:X4}, HL: {this.HL.Value:X4}, SP: {this.SP.Value:X4}, PC: {this.PC.Value:X4}");
             Console.WriteLine(
-                $"Zero: {this.Zero.Value}, Subtract: {this.Subtract.Value}, HalfCarry: {this.HalfCarry.Value}, Carry: {this.Carry.Value},");
+                $"Zero: {this.Zero.Value}, Subtract: {this.Subtract.Value}, HalfCarry: {this.HalfCarry.Value}, Carry: {this.Carry.Value}");
         }
     }
 }

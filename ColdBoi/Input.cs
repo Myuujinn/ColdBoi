@@ -43,7 +43,6 @@ namespace ColdBoi
             var keyboardState = Keyboard.GetState();
             var pollingBits = (byte) (Read() & INPUT_MASK);
             var inputByte = (byte) (DEFAULT_STATE | pollingBits);
-            
 
             foreach (var (bitNumber, firstKey, secondKey) in this.inputMap)
             {
@@ -51,7 +50,7 @@ namespace ColdBoi
                 if (isPressed)
                     continue;
 
-                inputByte |= (byte) (1 << bitNumber);
+                inputByte = Bit.Set(inputByte, bitNumber, true);
             }
 
             Write(inputByte);

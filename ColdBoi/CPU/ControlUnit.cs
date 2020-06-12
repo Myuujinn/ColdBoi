@@ -17,13 +17,13 @@ namespace ColdBoi.CPU
             this.InstructionMap = new Dictionary<byte, Instruction>();
             this.BigInstructionMap = new Dictionary<ushort, BigInstruction>();
             this.Processor = processor;
-            
+
             this.InstructionMap.Add(AddAA.OPCODE, new AddAA(processor));
             this.InstructionMap.Add(AddHlBc.OPCODE, new AddHlBc(processor));
             this.InstructionMap.Add(AddHlDe.OPCODE, new AddHlDe(processor));
             this.InstructionMap.Add(AddHlHl.OPCODE, new AddHlHl(processor));
             this.InstructionMap.Add(AddHlSp.OPCODE, new AddHlSp(processor));
-            
+
             this.InstructionMap.Add(AndA.OPCODE, new AndA(processor));
             this.InstructionMap.Add(AndB.OPCODE, new AndB(processor));
             this.InstructionMap.Add(AndC.OPCODE, new AndC(processor));
@@ -35,11 +35,11 @@ namespace ColdBoi.CPU
             this.InstructionMap.Add(AndN.OPCODE, new AndN(processor));
 
             this.InstructionMap.Add(CallNn.OPCODE, new CallNn(processor));
-            
+
             this.InstructionMap.Add(CpN.OPCODE, new CpN(processor));
-            
+
             this.InstructionMap.Add(Cpl.OPCODE, new Cpl(processor));
-            
+
             this.InstructionMap.Add(DecA.OPCODE, new DecA(processor));
             this.InstructionMap.Add(DecB.OPCODE, new DecB(processor));
             this.InstructionMap.Add(DecBc.OPCODE, new DecBc(processor));
@@ -49,25 +49,35 @@ namespace ColdBoi.CPU
             this.InstructionMap.Add(DecE.OPCODE, new DecE(processor));
             this.InstructionMap.Add(DecH.OPCODE, new DecH(processor));
             this.InstructionMap.Add(DecHl.OPCODE, new DecHl(processor));
+            this.InstructionMap.Add(DecHl2.OPCODE, new DecHl2(processor));
             this.InstructionMap.Add(DecL.OPCODE, new DecL(processor));
             this.InstructionMap.Add(DecSp.OPCODE, new DecSp(processor));
-            
+
             this.InstructionMap.Add(Di.OPCODE, new Di(processor));
-            
+
             this.InstructionMap.Add(Ei.OPCODE, new Ei(processor));
-            
+
             this.InstructionMap.Add(IncA.OPCODE, new IncA(processor));
             this.InstructionMap.Add(IncB.OPCODE, new IncB(processor));
+            this.InstructionMap.Add(IncBc.OPCODE, new IncBc(processor));
             this.InstructionMap.Add(IncC.OPCODE, new IncC(processor));
             this.InstructionMap.Add(IncD.OPCODE, new IncD(processor));
+            this.InstructionMap.Add(IncDe.OPCODE, new IncDe(processor));
             this.InstructionMap.Add(IncE.OPCODE, new IncE(processor));
             this.InstructionMap.Add(IncH.OPCODE, new IncH(processor));
             this.InstructionMap.Add(IncHl.OPCODE, new IncHl(processor));
+            this.InstructionMap.Add(IncHl2.OPCODE, new IncHl2(processor));
             this.InstructionMap.Add(IncL.OPCODE, new IncL(processor));
-            
+            this.InstructionMap.Add(IncSp.OPCODE, new IncSp(processor));
+
+            this.InstructionMap.Add(JpCNn.OPCODE, new JpCNn(processor));
             this.InstructionMap.Add(JpHl.OPCODE, new JpHl(processor));
+            this.InstructionMap.Add(JpNcNn.OPCODE, new JpNcNn(processor));
             this.InstructionMap.Add(JpNn.OPCODE, new JpNn(processor));
-            
+            this.InstructionMap.Add(JpNzNn.OPCODE, new JpNzNn(processor));
+            this.InstructionMap.Add(JpZNn.OPCODE, new JpZNn(processor));
+
+            this.InstructionMap.Add(JrN.OPCODE, new JrN(processor));
             this.InstructionMap.Add(JrNz.OPCODE, new JrNz(processor));
             this.InstructionMap.Add(JrZ.OPCODE, new JrZ(processor));
 
@@ -87,6 +97,7 @@ namespace ColdBoi.CPU
             this.InstructionMap.Add(LdBA.OPCODE, new LdBA(processor));
             this.InstructionMap.Add(LdBB.OPCODE, new LdBB(processor));
             this.InstructionMap.Add(LdBC.OPCODE, new LdBC(processor));
+            this.InstructionMap.Add(LdBcA.OPCODE, new LdBcA(processor));
             this.InstructionMap.Add(LdBcNn.OPCODE, new LdBcNn(processor));
             this.InstructionMap.Add(LdBD.OPCODE, new LdBD(processor));
             this.InstructionMap.Add(LdBE.OPCODE, new LdBE(processor));
@@ -109,6 +120,7 @@ namespace ColdBoi.CPU
             this.InstructionMap.Add(LdDC.OPCODE, new LdDC(processor));
             this.InstructionMap.Add(LdDD.OPCODE, new LdDD(processor));
             this.InstructionMap.Add(LdDE.OPCODE, new LdDE(processor));
+            this.InstructionMap.Add(LdDeA.OPCODE, new LdDeA(processor));
             this.InstructionMap.Add(LdDH.OPCODE, new LdDH(processor));
             this.InstructionMap.Add(LdDHl.OPCODE, new LdDHl(processor));
             this.InstructionMap.Add(LdDL.OPCODE, new LdDL(processor));
@@ -130,6 +142,11 @@ namespace ColdBoi.CPU
             this.InstructionMap.Add(LdHH.OPCODE, new LdHH(processor));
             this.InstructionMap.Add(LdHHl.OPCODE, new LdHHl(processor));
             this.InstructionMap.Add(LdHL.OPCODE, new LdHL(processor));
+            this.InstructionMap.Add(LdHlA.OPCODE, new LdHlA(processor));
+            this.InstructionMap.Add(LdHlN.OPCODE, new LdHlN(processor));
+            this.InstructionMap.Add(LdHlNn.OPCODE, new LdHlNn(processor));
+            this.InstructionMap.Add(LdiAHl.OPCODE, new LdiAHl(processor));
+            this.InstructionMap.Add(LdiHlA.OPCODE, new LdiHlA(processor));
             this.InstructionMap.Add(LdLB.OPCODE, new LdLB(processor));
             this.InstructionMap.Add(LdLC.OPCODE, new LdLC(processor));
             this.InstructionMap.Add(LdLD.OPCODE, new LdLD(processor));
@@ -137,32 +154,42 @@ namespace ColdBoi.CPU
             this.InstructionMap.Add(LdLH.OPCODE, new LdLH(processor));
             this.InstructionMap.Add(LdLHl.OPCODE, new LdLHl(processor));
             this.InstructionMap.Add(LdLL.OPCODE, new LdLL(processor));
-            this.InstructionMap.Add(LdHlN.OPCODE, new LdHlN(processor));
-            this.InstructionMap.Add(LdHlNn.OPCODE, new LdHlNn(processor));
-            this.InstructionMap.Add(LdiAHl.OPCODE, new LdiAHl(processor));
             this.InstructionMap.Add(LdNnA.OPCODE, new LdNnA(processor));
             this.InstructionMap.Add(LdSpNn.OPCODE, new LdSpNn(processor));
-            
+
             this.InstructionMap.Add(Nop.OPCODE, new Nop(processor));
-            
+
             this.InstructionMap.Add(OrB.OPCODE, new OrB(processor));
             this.InstructionMap.Add(OrC.OPCODE, new OrC(processor));
 
+            this.InstructionMap.Add(PopAf.OPCODE, new PopAf(processor));
+            this.InstructionMap.Add(PopBc.OPCODE, new PopBc(processor));
+            this.InstructionMap.Add(PopDe.OPCODE, new PopDe(processor));
             this.InstructionMap.Add(PopHl.OPCODE, new PopHl(processor));
 
             this.InstructionMap.Add(PushAf.OPCODE, new PushAf(processor));
             this.InstructionMap.Add(PushBc.OPCODE, new PushBc(processor));
             this.InstructionMap.Add(PushDe.OPCODE, new PushDe(processor));
             this.InstructionMap.Add(PushHl.OPCODE, new PushHl(processor));
-            
+
             this.InstructionMap.Add(Ret.OPCODE, new Ret(processor));
+            this.InstructionMap.Add(RetC.OPCODE, new RetC(processor));
+            this.InstructionMap.Add(Reti.OPCODE, new Reti(processor));
+            this.InstructionMap.Add(RetNc.OPCODE, new RetNc(processor));
+            this.InstructionMap.Add(RetNz.OPCODE, new RetNz(processor));
+            this.InstructionMap.Add(RetZ.OPCODE, new RetZ(processor));
+
+
             this.InstructionMap.Add(Rst28.OPCODE, new Rst28(processor));
-            
+
             this.InstructionMap.Add(XorA.OPCODE, new XorA(processor));
             this.InstructionMap.Add(XorC.OPCODE, new XorC(processor));
             
+            var resFactory = new ResFactory(this.Processor);
+            resFactory.Populate(this.BigInstructionMap);
+
             this.BigInstructionMap.Add(SwapA.OPCODE, new SwapA(processor));
-            
+
             this.BigInstructionMap.Add(SlaA.OPCODE, new SlaA(processor));
             this.BigInstructionMap.Add(SlaB.OPCODE, new SlaB(processor));
             this.BigInstructionMap.Add(SlaC.OPCODE, new SlaC(processor));
@@ -185,7 +212,10 @@ namespace ColdBoi.CPU
 
             var isValid = this.BigInstructionMap.TryGetValue(opCode, out var instruction);
             if (!isValid)
+            {
+                this.Processor.Registers.Dump();
                 throw new UnknownInstructionException($"0x{this.Processor.Registers.PC.Value:X4}: 0x{opCode:X4}");
+            }
 
             return instruction;
         }
@@ -199,7 +229,10 @@ namespace ColdBoi.CPU
 
             var isValid = this.InstructionMap.TryGetValue(opCode, out var instruction);
             if (!isValid)
+            {
+                this.Processor.Registers.Dump();
                 throw new UnknownInstructionException($"0x{this.Processor.Registers.PC.Value:X4}: 0x{opCode:X2}");
+            }
 
             return instruction;
         }

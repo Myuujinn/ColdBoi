@@ -13,8 +13,8 @@ namespace ColdBoi.CPU.Instructions
 
         public override void Execute(params byte[] operands)
         {
-            this.processor.Memory.InterruptMaster = false;
-            
+            this.processor.Interrupts.Master = false;
+
 #if DEBUG
             Console.WriteLine($"{this.processor.Registers.PC.Value:X4}: {this.Name}");
 #endif

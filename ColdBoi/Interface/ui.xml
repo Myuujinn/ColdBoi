@@ -1,0 +1,17 @@
+<Project>
+  <Project.ExportOptions Namespace="ColdBoi" Class="UI" OutputPath="C:\Users\Myujinn\Desktop" />
+  <VerticalStackPanel AcceptsKeyboardFocus="False">
+    <VerticalStackPanel.Proportions>
+      <Proportion Type="Auto" />
+      <Proportion Type="Auto" />
+      <Proportion Type="Fill" />
+    </VerticalStackPanel.Proportions>
+    <HorizontalMenu VerticalAlignment="Stretch" AcceptsKeyboardFocus="True" Id="_mainMenu">
+      <MenuItem Text="File" Id="menuItemFile">
+        <MenuItem Text="Open ROM..." Id="menuItemOpen" />
+        <MenuSeparator />
+        <MenuItem Text="Quit" Id="menuItemQuit" />
+      </MenuItem>
+    </HorizontalMenu>
+  </VerticalStackPanel>
+</Project>

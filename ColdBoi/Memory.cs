@@ -12,24 +12,15 @@ namespace ColdBoi
         private const int ROM_SIZE = 0x8000;
         private const int GAME_TITLE = 0x0134;
         private const int IO_START = 0xff00;
-        private const int INTERRUPT_ENABLE = 0xff0f;
-        private const int INTERRUPT_FLAGS = 0xffff;
+        private const int INTERRUPT_ASSERTED = 0xff0f;
+        private const int INTERRUPT_ENABLED = 0xffff;
+        private const int WRAM_START = 0xc000;
+        private const int WRAM_STOP = 0xdfff;
+        private const int ECHO_MEMORY_STOP = 0xfdff;
         private readonly Tuple<int, int> InternalRamRange;
         private readonly Tuple<int, int> EchoInternalRamRange;
 
-        public byte[] Content { get; private set; }
-
-        public bool InterruptMaster { get; set; }
-        public byte InterruptEnable
-        {
-            get => this.Content[INTERRUPT_ENABLE];
-            set => Write(INTERRUPT_ENABLE, value);
-        }
-        public byte InterruptFlags
-        {
-            get => this.Content[INTERRUPT_FLAGS];
-            set => Write(INTERRUPT_FLAGS, value);
-        }
+        public byte[] Content { get; }
 
         public string RomName
         {
@@ -40,10 +31,10 @@ namespace ColdBoi
         public Memory()
         {
             this.Content = new byte[MEMORY_SIZE];
-            this.InternalRamRange = new Tuple<int, int>(0xc000, 0xe000);
+            this.InternalRamRange = new Tuple<int, int>(WRAM_START, WRAM_STOP);
             this.EchoInternalRamRange = new Tuple<int, int>(
                 InternalRamRange.Item1 + MEMORY_ECHO_OFFSET,
-                InternalRamRange.Item2 + MEMORY_ECHO_OFFSET);
+                ECHO_MEMORY_STOP);
 
             Initialize();
         }
@@ -83,11 +74,16 @@ namespace ColdBoi
 
         private void WriteInRam(int address, byte value)
         {
-            if (address < InternalRamRange.Item1 && address > EchoInternalRamRange.Item2)
+            if (address < this.InternalRamRange.Item1 || address > this.EchoInternalRamRange.Item2)
                 return;
 
-            var offset = address < InternalRamRange.Item2 ? MEMORY_ECHO_OFFSET : -MEMORY_ECHO_OFFSET;
-            this.Content[address + offset] = value;
+            var offset = address < this.InternalRamRange.Item2 ? MEMORY_ECHO_OFFSET : -MEMORY_ECHO_OFFSET;
+            var echoAddress = address + offset;
+
+            if (echoAddress > this.EchoInternalRamRange.Item2)
+                return;
+
+            this.Content[echoAddress] = value;
         }
 
         public void Write(int address, byte value)
@@ -127,7 +123,7 @@ namespace ColdBoi
         {
             Console.WriteLine("-- Memory Dump --");
 
-            for (ushort i = 0; i < ROM_SIZE; i += 8)
+            for (var i = 0; i < MEMORY_SIZE; i += 8)
             {
                 var bytes = this.Content[i..(i + 8)];
                 // don't take non printable characters, feel free to improve if there is a better way
