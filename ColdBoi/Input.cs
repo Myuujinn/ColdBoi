@@ -8,51 +8,73 @@ namespace ColdBoi
     {
         private const ushort INPUT_ADDRESS = 0xff00;
         private const byte DEFAULT_STATE = 0xc0;
-        private const byte INPUT_MASK = 0x30;
+        private const byte BIT_4_MASK = 0x10;
+        private const byte BIT_5_MASK = 0x20;
 
-        private Memory memory;
-        private List<Tuple<byte, Keys, Keys>> inputMap;
+        private Processor processor;
+        private Memory Memory => this.processor.Memory;
+        private readonly List<Tuple<byte, Keys, Keys>> inputMap;
 
-        public Input(Memory memory)
+        public Input(Processor processor)
         {
-            this.memory = memory;
+            this.processor = processor;
             
             this.inputMap = new List<Tuple<byte, Keys, Keys>>
             {
-                new Tuple<byte, Keys, Keys>(0, Keys.A, Keys.Right),
-                new Tuple<byte, Keys, Keys>(1, Keys.B, Keys.Left),
-                new Tuple<byte, Keys, Keys>(2, Keys.Enter, Keys.Up),
-                new Tuple<byte, Keys, Keys>(3, Keys.Back, Keys.Down)
+                new Tuple<byte, Keys, Keys>(0, Keys.Right, Keys.A),
+                new Tuple<byte, Keys, Keys>(1, Keys.Left, Keys.B),
+                new Tuple<byte, Keys, Keys>(2, Keys.Up, Keys.Back),
+                new Tuple<byte, Keys, Keys>(3, Keys.Down, Keys.Enter)
             };
-            
-            
         }
 
         private byte Read()
         {
-            return this.memory.Content[INPUT_ADDRESS];
+            return this.Memory.Content[INPUT_ADDRESS];
         }
 
         private void Write(byte inputByte)
         {
-            this.memory.Write(INPUT_ADDRESS, inputByte);
+            this.Memory.Write(INPUT_ADDRESS, inputByte);
         }
 
         public void Update()
         {
             var keyboardState = Keyboard.GetState();
-            var pollingBits = (byte) (Read() & INPUT_MASK);
-            var inputByte = (byte) (DEFAULT_STATE | pollingBits);
+            var pollingBits = Read();
+            var inputByte = (byte) 0;
 
-            foreach (var (bitNumber, firstKey, secondKey) in this.inputMap)
+            if ((pollingBits & BIT_5_MASK) == 0)
             {
-                var isPressed = keyboardState.IsKeyDown(firstKey) || keyboardState.IsKeyDown(secondKey);
-                if (isPressed)
-                    continue;
+                foreach (var (bitNumber, _, secondKey) in this.inputMap)
+                {
+                    var bitValue = !keyboardState.IsKeyDown(secondKey);
 
-                inputByte = Bit.Set(inputByte, bitNumber, true);
+                    inputByte = Bit.Set(inputByte, bitNumber, bitValue);
+                }
+
+                inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK);
             }
-
+            else if ((pollingBits & BIT_4_MASK) == 0)
+            {
+                foreach (var (bitNumber, firstKey, _) in this.inputMap)
+                {
+                    var bitValue = !keyboardState.IsKeyDown(firstKey);
+                    
+                    inputByte = Bit.Set(inputByte, bitNumber, bitValue);
+                }
+                
+                inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_5_MASK);
+            }
+            else if ((pollingBits & 0x30) == 0)
+            {
+                inputByte = 0xff;
+            }
+            else
+            {
+                inputByte = 0;
+            }
+            
             Write(inputByte);
         }
     }

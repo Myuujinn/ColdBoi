@@ -22,9 +22,9 @@ namespace ColdBoi.CPU.BigInstructions
         public override void Execute(params byte[] operands)
         {
             if (isHigherByte)
-                this.register.HigherByte = Bit.Set(this.register.HigherByte, this.bitNumber, false);
+                this.register.HigherByte = global::ColdBoi.Bit.Set(this.register.HigherByte, this.bitNumber, false);
             else
-                this.register.LowerByte = Bit.Set(this.register.LowerByte, this.bitNumber, false);
+                this.register.LowerByte = global::ColdBoi.Bit.Set(this.register.LowerByte, this.bitNumber, false);
 
 #if DEBUG
             Console.WriteLine($"{this.processor.Registers.PC.Value:X4}: {this.Name} {this.bitNumber}, {this.registerName}");

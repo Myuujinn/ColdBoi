@@ -1,4 +1,3 @@
-using System;
 using ColdBoi.CPU;
 
 namespace ColdBoi
@@ -28,7 +27,7 @@ namespace ColdBoi
 
             this.Interrupts = new Interrupts(this);
             this.Graphics = new Graphics(this, screen);
-            this.Input = new Input(this.Memory);
+            this.Input = new Input(this);
             this.ControlUnit = new ControlUnit(this);
 
             this.cyclesExecuted = 0;
@@ -48,16 +47,6 @@ namespace ColdBoi
 
         public void Tick(int timesToTick)
         {
-            if (test >= 4)
-                return;
-            else if (test >= 2)
-            {
-                Console.Error.WriteLine("writing tileset");
-                this.Graphics.RenderTileSet();
-                test += 2;
-                return;
-            }
-            
             this.cyclesExecuted = 0;
 
             while (this.cyclesExecuted < timesToTick)
@@ -66,15 +55,8 @@ namespace ColdBoi
             }
         }
 
-        private int test;
-
         private void Cycle()
         {
-            if (this.Registers.PC.Value == 0x27ac)
-            {
-                this.test += 1;
-            }
-
             // Just to be sure
             this.walkerIndex = this.Registers.PC.Value;
 
@@ -91,10 +73,10 @@ namespace ColdBoi
             this.cyclesExecuted += instruction.Cycles;
 
             this.Graphics.Tick(instruction.Cycles);
-
-            this.Interrupts.Process();
-
+            
             this.Input.Update();
+            
+            this.Interrupts.Process();
         }
     }
 }

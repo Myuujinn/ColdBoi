@@ -17,7 +17,7 @@ namespace ColdBoi.CPU.BigInstructions
         {
             var value = this.processor.Memory.Content[this.processor.Registers.HL.Value];
 
-            value = Bit.Set(value, this.bitNumber, false);
+            value = global::ColdBoi.Bit.Set(value, this.bitNumber, false);
 
             this.processor.Memory.Write(this.processor.Registers.HL.Value, value);
 

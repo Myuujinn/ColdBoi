@@ -4,7 +4,7 @@ namespace ColdBoi.CPU.Instructions
 {
     public class CpN : Instruction
     {
-        public const byte OPCODE = 0xFE;
+        public const byte OPCODE = 0xfe;
         public const string NAME = "cp";
 
         public CpN(Processor processor) : base(processor, OPCODE, 1, 8, NAME)

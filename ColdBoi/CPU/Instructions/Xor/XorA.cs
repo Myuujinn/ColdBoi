@@ -4,7 +4,7 @@ namespace ColdBoi.CPU.Instructions
 {
     public class XorA : Instruction
     {
-        public const byte OPCODE = 0xAF;
+        public const byte OPCODE = 0xaf;
         public const string NAME = "xor";
 
         public XorA(Processor processor) : base(processor, OPCODE, 0, 4, NAME)

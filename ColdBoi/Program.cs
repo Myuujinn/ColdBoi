@@ -18,10 +18,10 @@ namespace ColdBoi
                 if (!argRom.HasValue())
                 {
                     Console.Error.WriteLine("No GameBoy ROM provided.");
-                    return 1;
+                    //return 1;
                 }
 
-                var scale = 1;
+                var scale = 3;
                 if (argScale.HasValue())
                 {
                     int.TryParse(argScale.Value(), out scale);
@@ -32,7 +32,7 @@ namespace ColdBoi
                     }
                 }
 
-                using var window = new ColdBoi(argRom.Value(), scale);
+                using var window = new ColdBoi("Tetris.GB", scale);
                 window.Run();
                 return 0;
             });

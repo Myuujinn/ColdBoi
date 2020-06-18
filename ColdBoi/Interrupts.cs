@@ -89,22 +89,21 @@ namespace ColdBoi
             var asserted = this.Asserted;
             var enabled = this.Enabled;
 
-            foreach (Type type in Enum.GetValues(typeof(Type)))
+            for (var type = 0; type <= (int) Type.Joypad; type++)
             {
-                var bit = (int) type;
-                if (Bit.IsSet(asserted, bit) && Bit.IsSet(enabled, bit))
+                if (Bit.IsSet(asserted, type) && Bit.IsSet(enabled, type))
                     Service(type);
             }
         }
 
-        private void Service(Type type)
+        private void Service(int type)
         {
             this.Master = false;
             this.Asserted = Bit.Set(this.Asserted, (byte) type, false);
             
             this.processor.Stack.Push(this.processor.Registers.PC.Value);
             
-            this.processor.Registers.PC.Value = this.ISRLocations[(int) type];
+            this.processor.Registers.PC.Value = this.ISRLocations[type];
         }
     }
 }

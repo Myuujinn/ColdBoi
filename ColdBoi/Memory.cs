@@ -7,6 +7,8 @@ namespace ColdBoi
 {
     public class Memory
     {
+        private const int ROM_START = 0x0000;
+        private const int ROM_END = 0x7fff;
         private const int MEMORY_SIZE = 0xffff + 1;
         private const int MEMORY_ECHO_OFFSET = 0x2000;
         private const int ROM_SIZE = 0x8000;
@@ -17,6 +19,8 @@ namespace ColdBoi
         private const int WRAM_START = 0xc000;
         private const int WRAM_STOP = 0xdfff;
         private const int ECHO_MEMORY_STOP = 0xfdff;
+        private const int OAM_DMA_SOURCE_ADDRESS = 0xff46;
+        
         private readonly Tuple<int, int> InternalRamRange;
         private readonly Tuple<int, int> EchoInternalRamRange;
 
@@ -88,9 +92,25 @@ namespace ColdBoi
 
         public void Write(int address, byte value)
         {
+            if (address >= ROM_START && address <= ROM_END) // can't write in ROM
+                return;
+            
             WriteInRam(address, value);
             InterceptScanlineWrite(address, ref value);
             this.Content[address] = value;
+            
+            if (address == OAM_DMA_SOURCE_ADDRESS)
+                OamDma(value);
+        }
+
+        private void OamDma(byte value)
+        {
+            var baseAddress = value << 8;
+
+            for (var i = 0; i < 0xa0; i++)
+            {
+                this.Content[Graphics.OAM_START + i] = this.Content[baseAddress + i];
+            }
         }
 
         private void InterceptScanlineWrite(int address, ref byte value)

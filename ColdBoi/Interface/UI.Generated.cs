@@ -3,13 +3,8 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.Brushes;
-
-#if !XENKO
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#else
-using Xenko.Core.Mathematics;
-#endif
 
 namespace ColdBoi.Interface
 {
@@ -62,5 +57,7 @@ namespace ColdBoi.Interface
 		public MenuItem menuItemQuit;
 		public MenuItem menuItemFile;
 		public HorizontalMenu _mainMenu;
+
+		public int MenuHeight => this._mainMenu.ActualBounds.Height - 3; // off by 3 error in myra?
 	}
 }
