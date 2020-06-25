@@ -42,38 +42,38 @@ namespace ColdBoi
         {
             var keyboardState = Keyboard.GetState();
             var pollingBits = Read();
-            var inputByte = (byte) 0;
+            byte inputByte = 0;
 
-            if ((pollingBits & BIT_5_MASK) == 0)
-            {
-                foreach (var (bitNumber, _, secondKey) in this.inputMap)
-                {
-                    var bitValue = !keyboardState.IsKeyDown(secondKey);
-
-                    inputByte = Bit.Set(inputByte, bitNumber, bitValue);
-                }
-
-                inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK);
-            }
-            else if ((pollingBits & BIT_4_MASK) == 0)
+            if (!Bit.IsSet(pollingBits, 4))
             {
                 foreach (var (bitNumber, firstKey, _) in this.inputMap)
                 {
                     var bitValue = !keyboardState.IsKeyDown(firstKey);
+
+                    inputByte = Bit.Set(inputByte, bitNumber, bitValue);
+                }
+
+                //inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK | BIT_5_MASK);
+            }
+            else if (!Bit.IsSet(pollingBits, 5))
+            {
+                foreach (var (bitNumber, _, secondKey) in this.inputMap)
+                {
+                    var bitValue = !keyboardState.IsKeyDown(secondKey);
                     
                     inputByte = Bit.Set(inputByte, bitNumber, bitValue);
                 }
                 
-                inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_5_MASK);
-            }
-            else if ((pollingBits & 0x30) == 0)
-            {
-                inputByte = 0xff;
+                //inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK | BIT_5_MASK);
             }
             else
             {
-                inputByte = 0;
+                inputByte = 0xff;
             }
+
+            pollingBits ^= 0xff;
+            inputByte |= 0xf0;
+            inputByte &= pollingBits;
             
             Write(inputByte);
         }
