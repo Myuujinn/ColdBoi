@@ -317,23 +317,5 @@ namespace ColdBoi
         {
             return this.Scanline >= y && this.Scanline < y + size;
         }
-
-        public void RenderTileSet()
-        {
-            for (var tileNumber = 0; tileNumber < (144 / 8) * (160 / 8); tileNumber++)
-            {
-                var tile = new Tile(this, tileNumber);
-                var tileData = tile.Data;
-
-                for (var y = 0; y < tileData.Length; y++)
-                {
-                    for (var x = 0; x < tileData[y].Length; x++)
-                    {
-                        this.screen.FrameBuffer[(tileNumber * 8 % 160) + x + (y + tileNumber * 8 / 160 * 8) * 160] =
-                            this.palette[tileData[y][x]];
-                    }
-                }
-            }
-        }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ColdBoi.CPU;
 
 namespace ColdBoi
 {
@@ -23,6 +24,8 @@ namespace ColdBoi
         
         private readonly Tuple<int, int> InternalRamRange;
         private readonly Tuple<int, int> EchoInternalRamRange;
+        
+        public OnReadMemoryEventHandler OnRead;
 
         public byte[] Content { get; }
 
@@ -137,6 +140,15 @@ namespace ColdBoi
             {
                 this.Content[i] = data[i];
             }
+        }
+
+        public byte Read(ushort address)
+        {
+            var value = this.Content[address];
+            
+            OnRead(this, address, ref value);
+
+            return value;
         }
 
         public void Dump()

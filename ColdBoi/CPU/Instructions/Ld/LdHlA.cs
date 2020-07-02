@@ -13,7 +13,7 @@ namespace ColdBoi.CPU.Instructions
 
         public override void Execute(params byte[] operands)
         {
-            this.processor.Memory.Write(this.processor.Memory.Content[this.processor.Registers.HL.Value],
+            this.processor.Memory.Write(this.processor.Memory.Read(this.processor.Registers.HL.Value),
                 this.processor.Registers.AF.HigherByte);
 
 #if DEBUG

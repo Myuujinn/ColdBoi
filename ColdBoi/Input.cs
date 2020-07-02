@@ -6,76 +6,93 @@ namespace ColdBoi
 {
     public class Input
     {
-        private const ushort INPUT_ADDRESS = 0xff00;
+        public const ushort INPUT_ADDRESS = 0xff00;
         private const byte DEFAULT_STATE = 0xc0;
         private const byte BIT_4_MASK = 0x10;
         private const byte BIT_5_MASK = 0x20;
 
-        private Processor processor;
-        private Memory Memory => this.processor.Memory;
+        private readonly Processor processor;
+        private Memory Memory => processor.Memory;
         private readonly List<Tuple<byte, Keys, Keys>> inputMap;
+
+        private KeyboardState keyboardState;
+
+        private bool IsPollingForButtons => !Bit.IsSet(Read(), 5);
+        private bool IsPollingForDirections => !Bit.IsSet(Read(), 4);
+        private bool IsPollingBoth => IsPollingForButtons && IsPollingForDirections;
 
         public Input(Processor processor)
         {
             this.processor = processor;
             
-            this.inputMap = new List<Tuple<byte, Keys, Keys>>
+            inputMap = new List<Tuple<byte, Keys, Keys>>
             {
                 new Tuple<byte, Keys, Keys>(0, Keys.Right, Keys.A),
                 new Tuple<byte, Keys, Keys>(1, Keys.Left, Keys.B),
                 new Tuple<byte, Keys, Keys>(2, Keys.Up, Keys.Back),
                 new Tuple<byte, Keys, Keys>(3, Keys.Down, Keys.Enter)
             };
+            
+            Write(0xff);
+
+            this.keyboardState = Keyboard.GetState();
+
+            Memory.OnRead += OnMemoryRead;
         }
 
         private byte Read()
         {
-            return this.Memory.Content[INPUT_ADDRESS];
+            return Memory.Content[INPUT_ADDRESS];
         }
 
         private void Write(byte inputByte)
         {
-            this.Memory.Write(INPUT_ADDRESS, inputByte);
+            Memory.Write(INPUT_ADDRESS, inputByte);
         }
 
-        public void Update()
+        private void OnMemoryRead(object sender, ushort address, ref byte value)
         {
-            var keyboardState = Keyboard.GetState();
-            var pollingBits = Read();
-            byte inputByte = 0;
+            if (address == INPUT_ADDRESS)
+                value = GetValueFromState();
+        }
 
-            if (!Bit.IsSet(pollingBits, 4))
+        private byte GetValueFromState()
+        {
+            byte inputByte = 0xf;
+
+            if (IsPollingForButtons)
             {
-                foreach (var (bitNumber, firstKey, _) in this.inputMap)
+                foreach (var (bitNumber, _, secondKey) in inputMap)
                 {
-                    var bitValue = !keyboardState.IsKeyDown(firstKey);
-
-                    inputByte = Bit.Set(inputByte, bitNumber, bitValue);
+                    if (this.keyboardState.IsKeyDown(secondKey)) 
+                        inputByte = Bit.Set(inputByte, bitNumber, false);
                 }
 
-                //inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK | BIT_5_MASK);
+                return (byte) (DEFAULT_STATE | inputByte | 0x30);
             }
-            else if (!Bit.IsSet(pollingBits, 5))
+
+            if (IsPollingForDirections)
             {
-                foreach (var (bitNumber, _, secondKey) in this.inputMap)
+                foreach (var (bitNumber, firstKey, _) in inputMap)
                 {
-                    var bitValue = !keyboardState.IsKeyDown(secondKey);
-                    
-                    inputByte = Bit.Set(inputByte, bitNumber, bitValue);
+                    if (this.keyboardState.IsKeyDown(firstKey))
+                        inputByte = Bit.Set(inputByte, bitNumber, false);
                 }
                 
-                //inputByte = (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK | BIT_5_MASK);
-            }
-            else
-            {
-                inputByte = 0xff;
+                return (byte) (DEFAULT_STATE | inputByte | 0x30);
             }
 
-            pollingBits ^= 0xff;
-            inputByte |= 0xf0;
-            inputByte &= pollingBits;
-            
-            Write(inputByte);
+            if (IsPollingBoth)
+            {
+                return 0xff;
+            }
+
+            return 0;
+        }
+
+        public void Update(int frequency)
+        {
+            this.keyboardState = Keyboard.GetState();
         }
     }
 }

@@ -22,8 +22,9 @@ namespace ColdBoi
             this.Screen = new Screen();
             this.Processor = new Processor(this.Screen);
             
+            this.Timer.AddAction(this.Processor.Input.Update);
             this.Timer.AddAction(this.Processor.Tick);
-            
+
             LoadRom(this.romPath);
             
             SetDefaultBootValues();

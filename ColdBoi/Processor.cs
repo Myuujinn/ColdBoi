@@ -74,8 +74,6 @@ namespace ColdBoi
 
             this.Graphics.Tick(instruction.Cycles);
             
-            this.Input.Update();
-            
             this.Interrupts.Process();
         }
     }

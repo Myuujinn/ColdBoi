@@ -18,7 +18,7 @@ namespace ColdBoi.PPU
         public int Number { get; }
 
         private readonly Graphics graphics;
-        private Memory memory => graphics.Memory;
+        private Memory Memory => this.graphics.Memory;
         private ushort TileDataAddress =>
             (ushort) (Bit.IsSet(this.graphics.Control, DATA_SELECT_BIT) ? 0x8000 : 0x8800);
 
@@ -47,7 +47,7 @@ namespace ColdBoi.PPU
             var lineValues = new byte[LINE_SIZE];
             for (var i = 0; i < LINE_SIZE; i++)
             {
-                lineValues[i] = this.memory.Content[address + i];
+                lineValues[i] = this.Memory.Content[address + i];
             }
 
             var lineData = new byte[WIDTH];

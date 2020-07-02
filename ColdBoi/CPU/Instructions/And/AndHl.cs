@@ -16,7 +16,7 @@ namespace ColdBoi.CPU.Instructions
             this.processor.Registers.ResetFlags();
             
             var address = (ushort) (operands[0] + (operands[1] << 8));
-            this.processor.Registers.AF.HigherByte &= this.processor.Memory.Content[address];
+            this.processor.Registers.AF.HigherByte &= this.processor.Memory.Read(address);
 
             this.processor.Registers.Zero.Value = this.processor.Registers.AF.HigherByte == 0;
             this.processor.Registers.HalfCarry.Value = true;

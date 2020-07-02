@@ -15,7 +15,7 @@ namespace ColdBoi.CPU.BigInstructions
         {
             this.processor.Registers.ResetFlags();
             
-            var value = this.processor.Memory.Content[this.processor.Registers.HL.Value];
+            var value = this.processor.Memory.Read(this.processor.Registers.HL.Value);
             
             this.processor.Registers.Carry.Value = (value & 0x01) > 0;
             

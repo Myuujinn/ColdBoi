@@ -13,7 +13,7 @@ namespace ColdBoi.CPU.Instructions
 
         public override void Execute(params byte[] operands)
         {
-            var value = this.processor.Memory.Content[this.processor.Registers.HL.Value];
+            var value = this.processor.Memory.Read(this.processor.Registers.HL.Value);
 
             this.processor.Registers.Carry.Value = value > this.processor.Registers.AF.HigherByte;
             this.processor.Registers.HalfCarry.Value = (value & 0x0f) > (this.processor.Registers.AF.HigherByte & 0x0f);

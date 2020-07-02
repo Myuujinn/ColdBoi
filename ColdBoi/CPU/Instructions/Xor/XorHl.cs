@@ -15,7 +15,7 @@ namespace ColdBoi.CPU.Instructions
         {
             this.processor.Registers.ResetFlags();
 
-            this.processor.Registers.AF.HigherByte ^= this.processor.Memory.Content[this.processor.Registers.HL.Value];
+            this.processor.Registers.AF.HigherByte ^= this.processor.Memory.Read(this.processor.Registers.HL.Value);
 
             if (this.processor.Registers.AF.HigherByte == 0)
                 this.processor.Registers.Zero.Value = true;

@@ -13,7 +13,7 @@ namespace ColdBoi.CPU.Instructions
 
         public override void Execute(params byte[] operands)
         {
-            var value = this.processor.Memory.Content[this.processor.Registers.HL.Value] +
+            var value = this.processor.Memory.Read(this.processor.Registers.HL.Value) +
                         Convert.ToByte(this.processor.Registers.Carry.Value);
             var result = this.processor.Registers.AF.HigherByte + value;
 
