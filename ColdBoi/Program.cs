@@ -32,7 +32,7 @@ namespace ColdBoi
                     }
                 }
 
-                using var window = new ColdBoi("Tetris.GB", scale);
+                using var window = new ColdBoi(argRom.Value(), scale);
                 window.Run();
                 return 0;
             });

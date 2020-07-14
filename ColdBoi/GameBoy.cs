@@ -9,11 +9,21 @@ namespace ColdBoi
         public Screen Screen { get; private set; }
         public Processor Processor { get; private set; }
 
+        public string RomPath
+        {
+            get => this.romPath;
+            set
+            {
+                this.romPath = value;
+                this.Reset();
+            }
+            
+        }
         private string romPath;
 
         public GameBoy(string romPath)
         {
-            SetRom(romPath);
+            this.RomPath = romPath;
         }
 
         public void Reset()
@@ -25,7 +35,7 @@ namespace ColdBoi
             this.Timer.AddAction(this.Processor.Input.Update);
             this.Timer.AddAction(this.Processor.Tick);
 
-            LoadRom(this.romPath);
+            LoadRom(this.RomPath);
             
             SetDefaultBootValues();
         }
@@ -89,12 +99,6 @@ namespace ColdBoi
         public void Update()
         {
             this.Timer.Update();
-        }
-
-        public void SetRom(string rom)
-        {
-            this.romPath = rom;
-            Reset();
         }
     }
 }

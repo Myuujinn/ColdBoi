@@ -15,7 +15,7 @@ namespace ColdBoi.CPU.Instructions
         public override void Execute(params byte[] operands)
         {
             var offset = operands[0];
-            this.processor.Memory.Write(BASE_ADDRESS + offset, this.processor.Registers.AF.HigherByte);
+            this.processor.Memory.Write((ushort) (BASE_ADDRESS + offset), this.processor.Registers.AF.HigherByte);
 
 #if DEBUG
             Console.WriteLine($"{this.processor.Registers.PC.Value:X4}: {this.Name} (FF00 + {offset:X2}), a");

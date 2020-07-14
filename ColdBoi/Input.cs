@@ -12,20 +12,21 @@ namespace ColdBoi
         private const byte BIT_5_MASK = 0x20;
 
         private readonly Processor processor;
-        private Memory Memory => processor.Memory;
+        private Memory Memory => this.processor.Memory;
         private readonly List<Tuple<byte, Keys, Keys>> inputMap;
 
         private KeyboardState keyboardState;
 
-        private bool IsPollingForButtons => !Bit.IsSet(Read(), 5);
-        private bool IsPollingForDirections => !Bit.IsSet(Read(), 4);
-        private bool IsPollingBoth => IsPollingForButtons && IsPollingForDirections;
+        private bool IsPollingForButtons => !Bit.IsSet(this.InputData, 5);
+        private bool IsPollingForDirections => !Bit.IsSet(this.InputData, 4);
+        private bool IsPollingBoth => this.IsPollingForButtons && this.IsPollingForDirections;
+
+        private byte InputData => this.Memory.Content[INPUT_ADDRESS];
 
         public Input(Processor processor)
         {
             this.processor = processor;
-            
-            inputMap = new List<Tuple<byte, Keys, Keys>>
+            this.inputMap = new List<Tuple<byte, Keys, Keys>>
             {
                 new Tuple<byte, Keys, Keys>(0, Keys.Right, Keys.A),
                 new Tuple<byte, Keys, Keys>(1, Keys.Left, Keys.B),
@@ -34,23 +35,18 @@ namespace ColdBoi
             };
             
             Write(0xff);
-
-            this.keyboardState = Keyboard.GetState();
-
-            Memory.OnRead += OnMemoryRead;
-        }
-
-        private byte Read()
-        {
-            return Memory.Content[INPUT_ADDRESS];
+            Update(0);
+            this.Memory.OnRead += OnReadInput;
         }
 
         private void Write(byte inputByte)
         {
-            Memory.Write(INPUT_ADDRESS, inputByte);
+            inputByte |= DEFAULT_STATE;
+            
+            this.Memory.Write(INPUT_ADDRESS, inputByte);
         }
 
-        private void OnMemoryRead(object sender, ushort address, ref byte value)
+        private void OnReadInput(object sender, ushort address, ref byte value)
         {
             if (address == INPUT_ADDRESS)
                 value = GetValueFromState();
@@ -62,24 +58,24 @@ namespace ColdBoi
 
             if (IsPollingForButtons)
             {
-                foreach (var (bitNumber, _, secondKey) in inputMap)
+                foreach (var (bitNumber, _, secondKey) in this.inputMap)
                 {
                     if (this.keyboardState.IsKeyDown(secondKey)) 
                         inputByte = Bit.Set(inputByte, bitNumber, false);
                 }
 
-                return (byte) (DEFAULT_STATE | inputByte | 0x30);
+                return (byte) (DEFAULT_STATE | inputByte | BIT_4_MASK);
             }
 
             if (IsPollingForDirections)
             {
-                foreach (var (bitNumber, firstKey, _) in inputMap)
+                foreach (var (bitNumber, firstKey, _) in this.inputMap)
                 {
                     if (this.keyboardState.IsKeyDown(firstKey))
                         inputByte = Bit.Set(inputByte, bitNumber, false);
                 }
                 
-                return (byte) (DEFAULT_STATE | inputByte | 0x30);
+                return (byte) (DEFAULT_STATE | inputByte | BIT_5_MASK);
             }
 
             if (IsPollingBoth)
@@ -90,7 +86,7 @@ namespace ColdBoi
             return 0;
         }
 
-        public void Update(int frequency)
+        public void Update(int _)
         {
             this.keyboardState = Keyboard.GetState();
         }

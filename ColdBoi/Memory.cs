@@ -25,15 +25,12 @@ namespace ColdBoi
         private readonly Tuple<int, int> InternalRamRange;
         private readonly Tuple<int, int> EchoInternalRamRange;
         
-        public OnReadMemoryEventHandler OnRead;
+        public OnMemoryEventHandler OnRead;
+        public OnMemoryEventHandler OnWrite;
 
         public byte[] Content { get; }
 
-        public string RomName
-        {
-            get =>
-                System.Text.Encoding.UTF8.GetString(this.Content[GAME_TITLE..(GAME_TITLE + 16)]);
-        }
+        public string RomName => System.Text.Encoding.UTF8.GetString(this.Content[GAME_TITLE..(GAME_TITLE + 16)]);
 
         public Memory()
         {
@@ -48,7 +45,14 @@ namespace ColdBoi
 
         private void Initialize()
         {
+            SetMemoryEvents();
             SetDefaultIoValues();
+        }
+
+        private void SetMemoryEvents()
+        {
+            this.OnWrite += EchoWriteInRam;
+            this.OnWrite += InterceptScanlineWrite;
         }
 
         private void SetDefaultIoValues()
@@ -75,11 +79,11 @@ namespace ColdBoi
 
             for (ushort i = 0; i < ioValues.Length; i++)
             {
-                Write(i + IO_START, ioValues[i]);
+                Write((ushort) (i + IO_START), ioValues[i]);
             }
         }
 
-        private void WriteInRam(int address, byte value)
+        private void EchoWriteInRam(object sender, ushort address, ref byte value)
         {
             if (address < this.InternalRamRange.Item1 || address > this.EchoInternalRamRange.Item2)
                 return;
@@ -90,17 +94,28 @@ namespace ColdBoi
             if (echoAddress > this.EchoInternalRamRange.Item2)
                 return;
 
-            this.Content[echoAddress] = value;
+            WriteToRam(echoAddress, value);
+        }
+        
+        private void InterceptScanlineWrite(object sender, ushort address, ref byte value)
+        {
+            if (address == Graphics.SCANLINE)
+                value = 0;
         }
 
-        public void Write(int address, byte value)
+        private void WriteToRam(int address, byte value)
         {
-            if (address >= ROM_START && address <= ROM_END) // can't write in ROM
+            this.Content[address] = value;
+        }
+
+        public void Write(ushort address, byte value)
+        {
+            if (address <= ROM_END) // can't write in ROM
                 return;
             
-            WriteInRam(address, value);
-            InterceptScanlineWrite(address, ref value);
-            this.Content[address] = value;
+            OnWrite(this, address, ref value);
+
+            WriteToRam(address, value);
             
             if (address == OAM_DMA_SOURCE_ADDRESS)
                 OamDma(value);
@@ -116,19 +131,13 @@ namespace ColdBoi
             }
         }
 
-        private void InterceptScanlineWrite(int address, ref byte value)
-        {
-            if (address == Graphics.SCANLINE)
-                value = 0;
-        }
-
-        public void Write(int address, ushort value)
+        public void Write(ushort address, ushort value)
         {
             var lowestByte = (byte) value;
             var highestByte = (byte) (value >> 8);
             
             Write(address, lowestByte);
-            Write(address + 1, highestByte);
+            Write((ushort) (address + 1), highestByte);
         }
 
         public void LoadRomData(byte[] data)

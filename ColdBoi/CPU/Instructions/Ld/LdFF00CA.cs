@@ -14,7 +14,7 @@ namespace ColdBoi.CPU.Instructions
 
         public override void Execute(params byte[] operands)
         {
-            this.processor.Memory.Write(BASE_ADDRESS + this.processor.Registers.BC.LowerByte,
+            this.processor.Memory.Write((ushort) (BASE_ADDRESS + this.processor.Registers.BC.LowerByte),
                 this.processor.Registers.AF.HigherByte);
 
 #if DEBUG

@@ -49,7 +49,7 @@ namespace ColdBoi
         {
             var dlg = new FileDialog(FileDialogMode.OpenFile)
             {
-                Filter = "*.gb"
+                Filter = "*.gb|*.gbc"
             };
 
             if (!string.IsNullOrEmpty(romPath))
@@ -70,8 +70,8 @@ namespace ColdBoi
                     return;
                 }
 
-                romPath = filePath;
-                this.GameBoy.Reset();
+                this.romPath = filePath;
+                this.Initialize();
             };
 
             dlg.ShowModal(desktop);
